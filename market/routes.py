@@ -71,7 +71,7 @@ def login_page():
         if attempted_user and attempted_user.check_password_correction(
             attempted_pwd = form.password.data
         ):
-            login_user(attempted_user)
+            login_user(attempted_user) # Logs a user in by creating a session.
             flash(f'Success! U R Logged in as {attempted_user.username}', category='success')
             return redirect(url_for('market_page'))
         else:
@@ -81,6 +81,6 @@ def login_page():
 
 @app.route('/logout')
 def logout_page():
-    logout_user()
+    logout_user() # Logs a user out by clearing their session
     flash("You have been logged out",category='info')
     return redirect(url_for('home_page'))
