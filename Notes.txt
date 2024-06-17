@@ -1,0 +1,162 @@
+$env:FLASK_APP="market.py"
+
+$env:FLASK_DEBUG=1  ---> To no need to restart our application again after any modification just refresh to reflect chnages
+
+flask run
+
+
+
+pip install flask-sqlalchemy
+
+to create database
+-----------------
+$ python
+>>> from market import app, db
+>>> app.app_context().push()
+>>> db.create_all()
+
+
+to add item into db
+-------------------
+>>> from market.models import Item
+>>> item1 = Item(name="Phone 10", price=50000, barcode='123456789012', description="buy me")
+>>> db.session.add(item1)
+>>> db.session.commit()
+
+to see the Item
+---------------
+>>> Item.query.all()
+
+
+some results ater adding --> def __repr__(self):
+----------------------------
+>>> from market import app, db
+>>> app.app_context().push()    
+>>> Item.query.all()
+[Item Phone 10, Item Laptop]
+
+------------------------------->
+
+>>> for item in Item.query.all():
+...  item.name
+...  item.price
+...  item.description
+...  item.id
+...  item.barcode
+...
+'Phone 10'
+50000
+'buy me'
+1
+'123456789012'
+'Laptop'
+60000
+'plzz buy me'
+2
+'123045698712'
+>>>
+
+---------------------------------->
+>>> Item.query.filter_by(price=50000) 
+<flask_sqlalchemy.query.Query object at 0x0000023367A60650>
+
+>>> for item in Item.query.filter_by(price=50000):
+...  item.name
+...
+'Phone 10'
+
+
+
+
+------------------------------------------------------------------------------------------------------------
+
+Again creating all from scratch
+--------------------------------
+$ python
+>>> from market import app, db
+>>> app.app_context().push()
+>>> db.drop_all()
+>>> from market.models import User,Item
+>>> u1 = User(username='pavan', password_hash='pavan', email='pavan@gmail.com') 
+>>> db.session.add(u1)
+>>> db.session.commit()
+>>> User.query.all()
+[<User 1>]
+
+>>> i1 = Item(name='Iphone',description='buy',barcode='123456987052', price=800) 
+>>> db.session.add(i1)
+>>> db.session.commit()
+>>> i2 = Item(name='Laptop',description='buy me',barcode='128556987052', price=8000) 
+>>> db.session.add(i2)                                                
+>>> db.session.commit()   
+>>> Item.query.all()
+[Item Iphone, Item Laptop] 
+
+>>> item = Item.query.filter_by(name='Iphone')
+>>> item
+<flask_sqlalchemy.query.Query object at 0x0000029A1D4E2810>
+>>> item = Item.query.filter_by(name='Iphone').first()
+>>> item
+Item Iphone
+
+>>> item.owner
+>>> item.owner = User.query.filter_by(username='pavan').first()
+>>> db.session.add(item)
+>>> db.session.commit()
+     Error : [SQL: UPDATE item SET owner=? WHERE item.id = ?]
+
+
+>>> db.session.rollback()
+>>> item.owner = User.query.filter_by(username='pavan').first().id
+>>> db.session.add(item)  
+>>> db.session.commit()
+>>> item.owner
+1
+>>> i = Item.query.filter_by(name='Iphone').first()
+>>> i.owned_user
+<User 1>
+
+
+--------------------------------------------------------------------------------------------------------------
+
+Flask Forms
+-----------
+instalations:  pip install flask-wtf
+               pip install wtforms
+
+PS E:\FLASK\FlaskMarket> python
+Python 3.12.4 (tags/v3.12.4:8e8a4ba, Jun  6 2024, 19:30:16) [MSC v.1940 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import os
+>>> os.urandom(12).hex()
+'d1ad99286295ac4cbf19080b'
+>>> os.urandom(12).hex()
+'defdb7ada5971bb866f659b3'
+
+
+
+----------------------------------------------------------------------------------------
+
+pip install flask_bcrypt
+
+
+PS E:\FLASK\FlaskMarket> python
+Python 3.12.4 (tags/v3.12.4:8e8a4ba, Jun  6 2024, 19:30:16) [MSC v.1940 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from market import app,db
+>>> app.app_context().push()
+>>> from market.models import User
+>>> for usr in User.query.all():
+...  usr.username  
+...  usr.password_hash  
+...
+'pavan'
+'pavan'
+'pavan1'
+'pavan1'
+'pavan2'
+'$2b$12$rj7gRov5jUJNE9dN/Wr1n.ReGxi/SPYZUthgKN8bQx2pVmRXK57AS'
+
+
+---------------------------------------------------------------------
+ pip install flask_login
